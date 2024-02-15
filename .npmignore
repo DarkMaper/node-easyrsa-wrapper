@@ -1,1 +1,7 @@
 src/
+tests/
+.vscode/
+.editorconfig
+.eslintrc.cjs
+.prettierrc
+jest.config.js
