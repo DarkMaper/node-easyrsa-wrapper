@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --runInBand",
-    "coverage": "pnpm test -- --coverage",
+    "coverage": "npm test -- --coverage",
     "lint": "eslint",
-    "prepublish": "pnpm lint --fix",
+    "prepublish": "npm lint --fix",
     "build": "tsc"
   },
   "keywords": ["node", "javascript", "openssl", "easyrsa", "pki", "x509", "certificate", "certificate authority"],
