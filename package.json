@@ -1,0 +1,35 @@
+{
+  "name": "@darkmaper/easyrsa-wrapper",
+  "version": "1.0.0",
+  "description": "An EasyRSA wrapper to maintain a private key infrastructure using Javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --runInBand",
+    "coverage": "pnpm test -- --coverage",
+    "lint": "eslint",
+    "prepublish": "pnpm lint --fix",
+    "build": "tsc"
+  },
+  "keywords": ["node", "javascript", "openssl", "easyrsa", "pki", "x509", "certificate", "certificate authority"],
+  "author": "Luis Orozco",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/ejs": "3.1.5",
+    "@types/jest": "29.5.11",
+    "@types/lodash": "4.14.202",
+    "@types/node": "20.10.5",
+    "@typescript-eslint/eslint-plugin": "6.16.0",
+    "@typescript-eslint/parser": "6.16.0",
+    "eslint": "8.56.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-prettier": "5.1.2",
+    "jest": "29.7.0",
+    "prettier": "3.1.1",
+    "ts-jest": "29.1.1",
+    "typescript": "5.3.3"
+  },
+  "dependencies": {
+    "ejs": "3.1.9",
+    "lodash": "4.17.21"
+  }
+}
