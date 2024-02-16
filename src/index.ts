@@ -103,7 +103,7 @@ const Curve = [
 ] as const;
 export type ICurve = (typeof Curve)[number];
 
-type Algorithm = 'rsa' | 'ec';
+export type Algorithm = 'rsa' | 'ec';
 
 export interface EasyRSAArgs {
     pki: string;
@@ -115,13 +115,13 @@ export interface EasyRSAArgs {
     curve: ICurve;
 }
 
-interface CertificateOptions {
+export interface CertificateOptions {
     commonName?: string;
     password?: string;
     caPassword?: string;
 }
 
-interface CreateCert extends CertificateOptions {
+export interface CreateCert extends CertificateOptions {
     name: string;
 }
 
@@ -135,7 +135,7 @@ const RevokeReason = [
     'certificateHold',
 ] as const;
 
-type IRevokeReason = (typeof RevokeReason)[number];
+export type IRevokeReason = (typeof RevokeReason)[number];
 
 export default class EasyRSA {
     easyrsaDir: string;
