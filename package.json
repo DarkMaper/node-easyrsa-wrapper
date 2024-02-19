@@ -12,9 +12,19 @@
     "coverage": "npm run test -- --coverage",
     "lint": "eslint",
     "prepublish": "npm run lint --fix",
-    "build": "tsc"
+    "build": "tsc && npm run copy-templates",
+    "copy-templates": "copyfiles -u 1 src/templates/* dist/"
   },
-  "keywords": ["node", "javascript", "openssl", "easyrsa", "pki", "x509", "certificate", "certificate authority"],
+  "keywords": [
+    "node",
+    "javascript",
+    "openssl",
+    "easyrsa",
+    "pki",
+    "x509",
+    "certificate",
+    "certificate authority"
+  ],
   "author": "Luis Orozco",
   "license": "MIT",
   "devDependencies": {
@@ -24,6 +34,7 @@
     "@types/node": "20.10.5",
     "@typescript-eslint/eslint-plugin": "6.16.0",
     "@typescript-eslint/parser": "6.16.0",
+    "copyfiles": "2.4.1",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.1.2",
