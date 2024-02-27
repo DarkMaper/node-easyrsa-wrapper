@@ -14,10 +14,17 @@ import {
     PrivateKeyIsEncryptedError,
 } from './errors';
 
-const Digest = ['md5', 'sha1', 'sha256', 'sha224', 'sha384', 'sha512'] as const;
+export const Digest = [
+    'md5',
+    'sha1',
+    'sha256',
+    'sha224',
+    'sha384',
+    'sha512',
+] as const;
 export type IDigest = (typeof Digest)[number];
 
-const Curve = [
+export const Curve = [
     'secp112r1',
     'secp112r2',
     'secp128r1',
@@ -125,7 +132,7 @@ export interface CreateCert extends CertificateOptions {
     name: string;
 }
 
-const RevokeReason = [
+export const RevokeReason = [
     'unspecified',
     'keyCompromise',
     'CACompromise',
