@@ -222,7 +222,10 @@ export default class EasyRSA {
                     }
 
                     if (
-                        (stderr.includes('Could not read CA private key from') || stderr.includes("Could not find CA private key")) &&
+                        (stderr.includes(
+                            'Could not read CA private key from',
+                        ) ||
+                            stderr.includes('Could not find CA private key')) &&
                         stderr.includes('maybe wrong password')
                     ) {
                         return rej(new BadCaPasswordError());
