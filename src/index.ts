@@ -22,7 +22,7 @@ export const Digest = [
     'sha384',
     'sha512',
 ] as const;
-export type IDigest = (typeof Digest)[number];
+export type Digest = (typeof Digest)[number];
 
 export const Curve = [
     'secp112r1',
@@ -108,18 +108,20 @@ export const Curve = [
     'brainpoolP512t1',
     'SM2',
 ] as const;
-export type ICurve = (typeof Curve)[number];
+export type Curve = (typeof Curve)[number];
 
-export type Algorithm = 'rsa' | 'ec';
+export const Algorithm = ['rsa', 'ec'] as const;
+
+export type Algorithm = (typeof Algorithm)[number];
 
 export interface EasyRSAArgs {
     pki: string;
     days: number;
     certDays: number;
-    digest: IDigest;
+    digest: Digest;
     algo: Algorithm;
     keySize: number;
-    curve: ICurve;
+    curve: Curve;
 }
 
 export interface CertificateOptions {
@@ -246,7 +248,6 @@ export default class EasyRSA {
                     ) {
                         return rej(new CertificateNotFoundError());
                     }
-                    //console.error({stderr, stdout});
                     return rej(stderr);
                 }
                 return res(stdout);
