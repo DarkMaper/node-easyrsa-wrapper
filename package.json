@@ -4,7 +4,7 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "An EasyRSA wrapper to maintain a private key infrastructure using Javascript",
   "main": "dist/index.js",
   "scripts": {
@@ -12,8 +12,7 @@
     "coverage": "npm run test -- --coverage",
     "lint": "eslint",
     "prepublish": "npm run lint --fix",
-    "build": "tsc && npm run copy-templates",
-    "copy-templates": "copyfiles -u 1 src/templates/* dist/"
+    "build": "tsc"
   },
   "keywords": [
     "node",
@@ -28,13 +27,11 @@
   "author": "Luis Orozco",
   "license": "MIT",
   "devDependencies": {
-    "@types/ejs": "3.1.5",
     "@types/jest": "29.5.11",
     "@types/lodash": "4.14.202",
     "@types/node": "20.10.5",
     "@typescript-eslint/eslint-plugin": "6.16.0",
     "@typescript-eslint/parser": "6.16.0",
-    "copyfiles": "2.4.1",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-prettier": "5.1.2",
@@ -44,7 +41,6 @@
     "typescript": "5.3.3"
   },
   "dependencies": {
-    "ejs": "3.1.9",
     "lodash": "4.17.21"
   }
 }
