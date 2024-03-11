@@ -5,3 +5,9 @@ tests/
 .eslintrc.cjs
 .prettierrc
 jest.config.js
+.tmp/
+coverage/
+.github/
+pnpm-lock.yaml
+tsconfig.json
+tsconfig.tsbuildinfo
