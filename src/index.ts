@@ -1,8 +1,7 @@
 import path, { isAbsolute, join } from 'node:path';
-import { readFile, readFileSync, writeFileSync } from 'node:fs';
+import { readFile } from 'node:fs';
 import { execFile, spawn } from 'node:child_process';
 import { defaults, pick } from 'lodash';
-import ejs from 'ejs';
 import { escapeShell } from './utils';
 import {
     BadCaPasswordError,
@@ -146,9 +145,70 @@ export const RevokeReason = [
 
 export type RevokeReason = (typeof RevokeReason)[number];
 
+interface Vars extends NodeJS.ProcessEnv {
+    EASYRSA_PKI: string;
+    EASYRSA_KEY_SIZE?: string;
+    EASYRSA_ALGO: Algorithm;
+    EASYRSA_CURVE?: Curve;
+    EASYRSA_CA_EXPIRE: string;
+    EASYRSA_CERT_EXPIRE: string;
+    EASYRSA_CRL_DAYS: string;
+    EASYRSA_PRE_EXPIRY_WINDOW: string;
+    EASYRSA_DIGEST: Digest;
+    EASYRSA_BATCH: string;
+}
+
+class EasyRsaVars {
+    EASYRSA_PKI: string;
+    EASYRSA_KEY_SIZE?: string;
+    EASYRSA_ALGO: Algorithm;
+    EASYRSA_CURVE?: Curve;
+    EASYRSA_CA_EXPIRE: string;
+    EASYRSA_CERT_EXPIRE: string;
+    EASYRSA_CRL_DAYS: string;
+    EASYRSA_PRE_EXPIRY_WINDOW: string;
+    EASYRSA_DIGEST: Digest;
+    EASYRSA_BATCH: string;
+
+    constructor(args: EasyRSAArgs) {
+        this.EASYRSA_PKI = args.pki;
+        this.EASYRSA_ALGO = args.algo;
+        this.EASYRSA_BATCH = '1';
+        this.EASYRSA_PRE_EXPIRY_WINDOW = '30';
+        this.EASYRSA_CA_EXPIRE = args.days.toString();
+        this.EASYRSA_CRL_DAYS = args.days.toString();
+        this.EASYRSA_CERT_EXPIRE = args.certDays.toString();
+        this.EASYRSA_DIGEST = args.digest;
+
+        if (args.curve) {
+            this.EASYRSA_CURVE = args.curve;
+        }
+
+        if (args.keySize) {
+            this.EASYRSA_KEY_SIZE = args.keySize.toString();
+        }
+    }
+
+    toProcessVars(): Vars {
+        return {
+            EASYRSA_ALGO: this.EASYRSA_ALGO,
+            EASYRSA_BATCH: this.EASYRSA_BATCH,
+            EASYRSA_CA_EXPIRE: this.EASYRSA_CA_EXPIRE,
+            EASYRSA_CERT_EXPIRE: this.EASYRSA_CERT_EXPIRE,
+            EASYRSA_CRL_DAYS: this.EASYRSA_CRL_DAYS,
+            EASYRSA_DIGEST: this.EASYRSA_DIGEST,
+            EASYRSA_PKI: this.EASYRSA_PKI,
+            EASYRSA_PRE_EXPIRY_WINDOW: this.EASYRSA_PRE_EXPIRY_WINDOW,
+            EASYRSA_CURVE: this.EASYRSA_CURVE,
+            EASYRSA_KEY_SIZE: this.EASYRSA_KEY_SIZE,
+        };
+    }
+}
+
 export default class EasyRSA {
     easyrsaDir: string;
     options: EasyRSAArgs;
+    vars: Vars;
 
     constructor(args: Partial<EasyRSAArgs> = {}) {
         if (args.digest && !Digest.includes(args.digest))
@@ -181,7 +241,7 @@ export default class EasyRSA {
             values,
         );
 
-        this.updateVarsFile();
+        this.vars = new EasyRsaVars(this.options).toProcessVars();
     }
 
     private easyrsa(args: string): Promise<string> {
@@ -191,6 +251,7 @@ export default class EasyRSA {
             const easyrsa = spawn(easyrsaBin, argsToArray, {
                 cwd: this.easyrsaDir,
                 shell: true,
+                env: { ...process.env, ...this.vars },
             });
 
             let stdout = '';
@@ -266,15 +327,6 @@ export default class EasyRSA {
                 res(data.includes('ENCRYPTED'));
             });
         });
-    }
-
-    private updateVarsFile() {
-        const varsTemplate = readFileSync(
-            join(`${__dirname}`, 'templates', 'vars'),
-            'utf-8',
-        );
-        const varsComplete = ejs.render(varsTemplate, this.options);
-        writeFileSync(join(this.easyrsaDir, 'vars'), varsComplete);
     }
 
     getPKIDir() {
@@ -394,7 +446,7 @@ export default class EasyRSA {
         caPassword,
     }: {
         name: string;
-        reason: IRevokeReason;
+        reason: RevokeReason;
         caPassword?: string;
     }) {
         try {
