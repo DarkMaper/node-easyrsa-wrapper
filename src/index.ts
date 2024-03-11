@@ -144,7 +144,7 @@ export const RevokeReason = [
     'certificateHold',
 ] as const;
 
-export type IRevokeReason = (typeof RevokeReason)[number];
+export type RevokeReason = (typeof RevokeReason)[number];
 
 export default class EasyRSA {
     easyrsaDir: string;
