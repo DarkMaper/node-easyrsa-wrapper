@@ -10,9 +10,9 @@
   },
   "scripts": {
     "test": "jest --runInBand",
-    "coverage": "npm run test -- --coverage",
+    "coverage": "pnpm run test -- --coverage",
     "lint": "eslint",
-    "prepublish": "npm run lint --fix",
+    "prepublish": "pnpm run lint --fix",
     "build": "tsc"
   },
   "keywords": [
