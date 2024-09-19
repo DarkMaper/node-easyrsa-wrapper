@@ -244,11 +244,10 @@ export default class EasyRSA {
         this.vars = new EasyRsaVars(this.options).toProcessVars();
     }
 
-    private easyrsa(args: string): Promise<string> {
+    private easyrsa(...args: string[]): Promise<string> {
         return new Promise((res, rej) => {
             const easyrsaBin = join(this.easyrsaDir, 'easyrsa');
-            const argsToArray = [...args.split(' ')];
-            const easyrsa = spawn(easyrsaBin, argsToArray, {
+            const easyrsa = spawn(easyrsaBin, args, {
                 cwd: this.easyrsaDir,
                 shell: true,
                 env: { ...process.env, ...this.vars },
@@ -268,6 +267,9 @@ export default class EasyRSA {
             });
 
             easyrsa.on('close', (code) => {
+                if (stdout.includes('Easy-RSA 3 usage and overview')) {
+                    return rej(new Error('Input fail'));
+                }
                 if (code) {
                     if (
                         stdout.includes(
@@ -338,7 +340,8 @@ export default class EasyRSA {
             void (async () => {
                 try {
                     const output = await this.easyrsa(
-                        `init-pki ${force ? 'hard' : 'soft'}`,
+                        'init-pki',
+                        force ? 'hard' : 'soft',
                     );
                     execFile(
                         'openvpn',
@@ -369,13 +372,10 @@ export default class EasyRSA {
             if (commonName) opts.push(`--req-cn=${escapeShell(commonName)}`);
             if (password)
                 opts.push(
-                    `--passin=pass:${escapeShell(
-                        password,
-                    )} --passout=pass:${escapeShell(password)}`,
+                    `--passin=pass:${escapeShell(password)}`,
+                    `--passout=pass:${escapeShell(password)}`,
                 );
-            const result = await this.easyrsa(
-                `${opts.join(' ')} build-ca ${easy_args}`,
-            );
+            const result = await this.easyrsa(...opts, 'build-ca', easy_args);
 
             return result;
         } catch (error) {
@@ -404,18 +404,15 @@ export default class EasyRSA {
             if (password) {
                 opts.push(`--passout=pass:${escapeShell(password)}`);
             }
-            await this.easyrsa(
-                `${opts.join(' ')} gen-req ${escapeShell(name)} ${easy_args}`,
-            );
+
+            await this.easyrsa(...opts, 'gen-req', name, easy_args);
 
             opts = [];
 
             if (caPassword)
                 opts.push(`--passin=pass:${escapeShell(caPassword)}`);
 
-            return await this.easyrsa(
-                `${opts.join(' ')} sign-req ${type} ${escapeShell(name)}`,
-            );
+            return await this.easyrsa(...opts, 'sign-req', type, name);
         } catch (error) {
             if (error instanceof Error) throw error;
             throw new Error('Fail to create certificate');
@@ -465,7 +462,7 @@ export default class EasyRSA {
             let opts = '';
 
             if (caPassword) opts = `--passin=pass:${escapeShell(caPassword)}`;
-            await this.easyrsa(opts + ` revoke ${escapeShell(name)} ${reason}`);
+            await this.easyrsa(opts, 'revoke', name, reason);
         } catch (error) {
             if (error instanceof Error) throw error;
             throw new Error('Fail to create client');
@@ -490,12 +487,13 @@ export default class EasyRSA {
                 opts.push(`--passin=pass:${escapeShell(caPassword)}`);
             if (password) opts.push(`--passout=pass:${escapeShell(password)}`);
             const output = await this.easyrsa(
-                `${opts.join(' ')} renew ${escapeShell(name)} ${easy_args}`,
+                ...opts,
+                'renew',
+                name,
+                easy_args,
             );
 
-            await this.easyrsa(
-                `${opts.join(' ')} revoke-renewed ${escapeShell(name)}`,
-            );
+            await this.easyrsa(...opts, 'revoke-renewed', name);
 
             return output;
         } catch (error) {
@@ -519,7 +517,7 @@ export default class EasyRSA {
                 ? `--passin=pass:${escapeShell(caPassword)}`
                 : '';
 
-            return await this.easyrsa(`${opts} gen-crl`);
+            return await this.easyrsa(opts, 'gen-crl');
         } catch (error) {
             if (error instanceof Error) throw error;
             throw new Error('Fail to create crl');
