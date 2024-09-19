@@ -1,6 +1,6 @@
-[![Node.js CI](https://github.com/DarkMaper/node-easyrsa/actions/workflows/node.js.yml/badge.svg)](https://github.com/DarkMaper/node-easyrsa/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/DarkMaper/node-easyrsa-wrapper/actions/workflows/node.js.yml/badge.svg)](https://github.com/DarkMaper/node-easyrsa-wrapper/actions/workflows/node.js.yml)
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/node-easyrsa/blob/main/LICENSE)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/node-easyrsa-wrapper/blob/main/LICENSE)
 
 
 # Wrapper Easy-RSA
