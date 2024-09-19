@@ -1,6 +1,5 @@
 {
   "name": "@darkmaper/easyrsa-wrapper",
-  "repository": "git@github.com:DarkMaper/node-easyrsa-wrapper.git",
   "version": "1.2.0",
   "description": "An EasyRSA wrapper to maintain a private key infrastructure using Javascript",
   "main": "dist/index.js",
