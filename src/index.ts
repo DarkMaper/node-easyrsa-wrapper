@@ -129,6 +129,11 @@ export interface CertificateOptions {
     caPassword?: string;
 }
 
+export interface CAOptions {
+    commonName?: string;
+    password?: string;
+}
+
 export interface CreateCert extends CertificateOptions {
     name: string;
 }
@@ -348,9 +353,7 @@ export default class EasyRSA {
                         ['--genkey', 'secret', this.options.pki + '/ta.key'],
                         (_stderr, _stdout, err) => {
                             if (err) {
-                                console.error(
-                                    'no se ha podido generar la clave ta.key',
-                                );
+                                console.error('cannot generate secret key');
                             }
                         },
                     );
@@ -362,10 +365,7 @@ export default class EasyRSA {
         });
     }
 
-    async buildCa({
-        commonName,
-        password,
-    }: CertificateOptions = {}): Promise<string> {
+    async buildCa({ commonName, password }: CAOptions = {}): Promise<string> {
         try {
             const opts: string[] = [];
             const easy_args = password ? '' : 'nopass';
