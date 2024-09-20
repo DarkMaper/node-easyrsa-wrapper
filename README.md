@@ -25,12 +25,12 @@ With RSA
 import EasyRSA from '@darkmaper/easyrsa-wrapper'
 
 const easyrsaOpts = {
-    pki: 'path/for/pki';
-    days: 3650;
-    certDays: 850;
-    digest: 'sha256';
-    algo: 'rsa;
-    keySize: 2048;
+    pki: 'path/for/pki',
+    days: 3650,
+    certDays: 850,
+    digest: 'sha256',
+    algo: 'rsa',
+    keySize: 2048,
 }
 
 const easyrsa = new EasyRSA(easyrsaOpts)
@@ -41,11 +41,11 @@ Or with EC
 import EasyRSA from '@darkmaper/easyrsa-wrapper';
 
 const easyrsaOpts = {
-    pki: 'path/for/pki';
-    days: 3650;
-    certDays: 850;
-    digest: 'sha256';
-    algo: 'ec;
+    pki: 'path/for/pki',
+    days: 3650,
+    certDays: 850,
+    digest: 'sha256',
+    algo: 'ec',
     curve: 'secp112r1'
 }
 
@@ -129,7 +129,7 @@ await easyrsa.genCrl('CaPassword')
 
 ## License
 
-[MIT](https://github.com/DarkMaper/node-easyrsa/actions/workflows/node.js.yml)
+[MIT](https://github.com/node-easyrsa-wrapper/blob/main/LICENSE)
 
 
 ## Authors
