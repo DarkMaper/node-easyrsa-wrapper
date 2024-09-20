@@ -18,7 +18,7 @@
     "test": "jest --runInBand",
     "coverage": "pnpm run test -- --coverage",
     "lint": "eslint",
-    "prepublish": "pnpm run lint --fix",
+    "prepublish": "pnpm run lint --fix && pnpm run build",
     "build": "tsc"
   },
   "keywords": [
