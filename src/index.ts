@@ -345,7 +345,7 @@ export default class EasyRSA {
                     );
                     execFile(
                         'openvpn',
-                        ['--genkey', '--secret', this.options.pki + '/ta.key'],
+                        ['--genkey', 'secret', this.options.pki + '/ta.key'],
                         (_stderr, _stdout, err) => {
                             if (err) {
                                 console.error(
