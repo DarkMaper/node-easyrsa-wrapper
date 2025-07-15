@@ -48,6 +48,8 @@ jobs:
               echo "version_changed=false" >> $GITHUB_OUTPUT
               echo "version unchanged"
             fi
+      - name: Install dependencies
+        run: npm ci
       - name: Build
         run: npm run build
       - name: Publish to NPM
