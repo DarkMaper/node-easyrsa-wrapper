@@ -126,6 +126,13 @@ await easyrsa.genCrl('CaPassword')
 
 **ATENTION:** If the CA is encrypted and not set ```caPassword``` or is a bad password easyrsa throws a error.
 
+# QA
+## How can I contribute to the project?
+The project is based on Easy-RSA for Linux. I plan to add Windows support in the future. For project development, it's recommended to use Linux or WSL (Windows Subsystem for Linux), as the tests won't run on Windows when using the Linux version of Easy-RSA. To contribute, fork the project and create a branch with the format ```feature/<name-feature>``` or ```fix/<fix-name>```. Don't create pull request to main branch.
+
+## Why include the binary of Easy-RSA in the package instead of being able to use external binaries?
+Easy-RSA Wrapper is, as its name suggests, a JavaScript wrapper for using the Bash binary. Both the JavaScript code and the binary's commands must match. Easy-RSA can change how its commands work, deprecate them, or remove them. To prevent the package from breaking because the version of Easy-RSA being used modified how a command works, it was decided to include the binary in the package.
+
 
 ## License
 
