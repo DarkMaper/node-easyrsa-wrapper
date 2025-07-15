@@ -134,4 +134,3 @@ easyrsa/vars
 
 # Ignore all lock files
 *-lock.yml
-*-lock.json
