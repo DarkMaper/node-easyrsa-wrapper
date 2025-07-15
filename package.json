@@ -15,9 +15,9 @@
   },
   "scripts": {
     "test": "jest --runInBand",
-    "coverage": "pnpm run test -- --coverage",
+    "coverage": "npm run test -- --coverage",
     "lint": "eslint",
-    "prepublish": "pnpm run lint --fix && pnpm run build",
+    "prepublish": "npm run lint --fix && npm run build",
     "build": "tsc"
   },
   "keywords": [
