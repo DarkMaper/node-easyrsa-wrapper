@@ -12,6 +12,7 @@ import {
     PkiDirNotFoundError,
     PrivateKeyIsEncryptedError,
 } from './errors';
+import { mkdir } from 'node:fs/promises';
 
 export const Digest = [
     'md5',
@@ -106,14 +107,15 @@ export const Curve = [
     'brainpoolP512r1',
     'brainpoolP512t1',
     'SM2',
+    'ed25519'
 ] as const;
 export type Curve = (typeof Curve)[number];
 
-export const Algorithm = ['rsa', 'ec'] as const;
+export const Algorithm = ['rsa', 'ec', 'ed'] as const;
 
 export type Algorithm = (typeof Algorithm)[number];
 
-export interface EasyRSAArgs {
+/* export interface EasyRSAArgs {
     pki: string;
     days: number;
     certDays: number;
@@ -121,7 +123,24 @@ export interface EasyRSAArgs {
     algo: Algorithm;
     keySize: number;
     curve: Curve;
-}
+} */
+
+export type EasyRSAArgs = {
+    pki: string;
+    days: number;
+    certDays: number;
+    digest: Digest;
+    
+} & ({
+    algo: 'rsa';
+    keySize: number;
+} | {
+    algo: 'ec',
+    curve: Curve
+} | {
+    algo: 'ed',
+    curve: 'ed25519'
+})
 
 export interface CertificateOptions {
     commonName?: string;
@@ -185,11 +204,11 @@ class EasyRsaVars {
         this.EASYRSA_CERT_EXPIRE = args.certDays.toString();
         this.EASYRSA_DIGEST = args.digest;
 
-        if (args.curve) {
+        if (args.algo === 'ec' || args.algo === 'ed') {
             this.EASYRSA_CURVE = args.curve;
         }
 
-        if (args.keySize) {
+        if (args.algo === 'rsa') {
             this.EASYRSA_KEY_SIZE = args.keySize.toString();
         }
     }
@@ -219,7 +238,7 @@ export default class EasyRSA {
         if (args.digest && !Digest.includes(args.digest))
             throw new Error('Digest not valid');
 
-        if (args.curve && !Curve.includes(args.curve))
+        if ((args.algo === 'ed' || args.algo === 'ec') && args.curve && !Curve.includes(args.curve))
             throw new Error('Curve not valid');
 
         this.easyrsaDir = path.join(__dirname, '..', 'easyrsa');
@@ -230,7 +249,6 @@ export default class EasyRSA {
             keySize: 2048,
             days: 3650,
             certDays: 825,
-            curve: 'sect571r1',
         };
 
         let pkiPath = undefined;
@@ -344,6 +362,7 @@ export default class EasyRSA {
         return new Promise((res, rej) => {
             void (async () => {
                 try {
+                    await mkdir(this.getPKIDir(), { recursive: true });
                     const output = await this.easyrsa(
                         'init-pki',
                         force ? 'hard' : 'soft',
@@ -462,7 +481,7 @@ export default class EasyRSA {
             let opts = '';
 
             if (caPassword) opts = `--passin=pass:${escapeShell(caPassword)}`;
-            await this.easyrsa(opts, 'revoke', name, reason);
+            await this.easyrsa(opts, 'revoke-issued', name, reason);
         } catch (error) {
             if (error instanceof Error) throw error;
             throw new Error('Fail to create client');
