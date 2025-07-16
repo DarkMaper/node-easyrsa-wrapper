@@ -3,7 +3,7 @@ import { BadCaPasswordError, CaAlreadyExistsError, CaNotFoundError, CertificateA
 import EasyRSA, { EasyRSAArgs } from '../src/index';
 import { join } from 'node:path';
 
-const pki = './.tmp/pki';
+const pki = './.tmp/rsa';
 
 const easyrsaConf: Partial<EasyRSAArgs> = {
     pki,
@@ -17,7 +17,7 @@ let name: string;
 
 const timeout = 10000; //10 seconds
 
-describe('=== PKI AND CA ===', () => {
+describe('=== PKI AND CA (RSA) ===', () => {
     const easyrsa = new EasyRSA(easyrsaConf);
 
     describe('Try methods without PKI initializated', () => {
