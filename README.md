@@ -1,4 +1,6 @@
-[![Node.js CI](https://github.com/DarkMaper/node-easyrsa-wrapper/actions/workflows/node.js.yml/badge.svg)](https://github.com/DarkMaper/node-easyrsa-wrapper/actions/workflows/node.js.yml)
+[![Publish Package to NPM](https://github.com/DarkMaper/node-easyrsa-wrapper/actions/workflows/publish.yml/badge.svg)](https://github.com/DarkMaper/node-easyrsa-wrapper/actions/workflows/publish.yml)![NPM Version](https://img.shields.io/npm/v/%40darkmaper%2Feasyrsa-wrapper)![NPM Downloads](https://img.shields.io/npm/dw/%40darkmaper%2Feasyrsa-wrapper)
+
+
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/node-easyrsa-wrapper/blob/main/LICENSE)
 
