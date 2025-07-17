@@ -418,7 +418,7 @@ export default class EasyRSA {
         { name, commonName, password, caPassword }: CreateCert,
     ) {
         try {
-            if (!(type in TypeCert)) {
+            if (!TypeCert.includes(type)) {
                 throw new Error('Type certificate is invalid');
             }
 
