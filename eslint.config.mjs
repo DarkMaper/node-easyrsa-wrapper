@@ -3,13 +3,14 @@ import tseslint from 'typescript-eslint';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export default tseslint.config(
+/* export default tseslint.config(
     eslint.configs.recommended,
-    tseslint.configs.recommendedTypeChecked,
     eslintConfigPrettier,
+    tseslint.configs.recommendedTypeChecked,
     {
         languageOptions: {
             parserOptions: {
@@ -18,10 +19,9 @@ export default tseslint.config(
             },
         },
         ignores: [
-            'tests/**/*.ts',
+            'tests/**//*',
             'node_modules',
-            'dist/**/*',
-            'eslint.config.mjs',
+            'dist/**//*',
             'jest.config.js'
         ],
         rules: {
@@ -30,11 +30,40 @@ export default tseslint.config(
             '@typescript-eslint/prefer-promise-reject-errors': ['off']
         }
     },
+) */
+
+export default tseslint.config(
     {
-        files: ['test/**/*'],
-        plugins: ['jest'],
-        env: {
-            "jest/globals": true 
+        ignores: [
+            'coverage/**/*',
+            'node_modules',
+            'jest.config.ts',
+            'dist/**/*',
+        ],
+    },
+    {
+        files: ['src/**/*.ts'],
+        extends: [
+            eslint.configs.recommended,
+            ...tseslint.configs.recommendedTypeChecked
+        ],
+        languageOptions: {
+            parserOptions: {
+                project: true,
+                tsconfigRootDir: __dirname
+            }
+        },
+        rules: {
+            'quotes': ['error', 'single'],
+            'linebreak-style': ['error', 'unix'],
+            '@typescript-eslint/prefer-promise-reject-errors': ['off']
+        }
+    },
+    {
+        files: ['src/**/*.ts'],
+        extends: [eslintPluginPrettier],
+        rules: {
+            ...eslintConfigPrettier.rules
         }
     }
 )

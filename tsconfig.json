@@ -107,7 +107,8 @@
     "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "eslint.config.mjs"
   ],
   "exclude": [
     "tests/**/*.ts",
