@@ -14,6 +14,9 @@ import {
 } from './errors';
 import { mkdir } from 'node:fs/promises';
 
+export const TypeCert = ['client', 'server', 'code-signing'] as const;
+export type TypeCert = (typeof TypeCert)[number];
+
 export const Digest = [
     'md5',
     'sha1',
@@ -107,7 +110,7 @@ export const Curve = [
     'brainpoolP512r1',
     'brainpoolP512t1',
     'SM2',
-    'ed25519'
+    'ed25519',
 ] as const;
 export type Curve = (typeof Curve)[number];
 
@@ -130,17 +133,20 @@ export type EasyRSAArgs = {
     days: number;
     certDays: number;
     digest: Digest;
-    
-} & ({
-    algo: 'rsa';
-    keySize: number;
-} | {
-    algo: 'ec',
-    curve: Curve
-} | {
-    algo: 'ed',
-    curve: 'ed25519'
-})
+} & (
+    | {
+          algo: 'rsa';
+          keySize: number;
+      }
+    | {
+          algo: 'ec';
+          curve: Curve;
+      }
+    | {
+          algo: 'ed';
+          curve: 'ed25519';
+      }
+);
 
 export interface CertificateOptions {
     commonName?: string;
@@ -238,7 +244,11 @@ export default class EasyRSA {
         if (args.digest && !Digest.includes(args.digest))
             throw new Error('Digest not valid');
 
-        if ((args.algo === 'ed' || args.algo === 'ec') && args.curve && !Curve.includes(args.curve))
+        if (
+            (args.algo === 'ed' || args.algo === 'ec') &&
+            args.curve &&
+            !Curve.includes(args.curve)
+        )
             throw new Error('Curve not valid');
 
         this.easyrsaDir = path.join(__dirname, '..', 'easyrsa');
@@ -404,10 +414,14 @@ export default class EasyRSA {
     }
 
     async createCert(
-        type: 'client' | 'server',
+        type: TypeCert,
         { name, commonName, password, caPassword }: CreateCert,
     ) {
         try {
+            if (!TypeCert.includes(type)) {
+                throw new Error('Type certificate is invalid');
+            }
+
             if (
                 !caPassword &&
                 (await this.isPrivateKeyEncrypted(
@@ -449,6 +463,20 @@ export default class EasyRSA {
 
     async createClient({ name, commonName, password, caPassword }: CreateCert) {
         return await this.createCert('client', {
+            name,
+            commonName,
+            password,
+            caPassword,
+        });
+    }
+
+    async createCodeSigning({
+        name,
+        commonName,
+        password,
+        caPassword,
+    }: CreateCert) {
+        return await this.createCert('code-signing', {
             name,
             commonName,
             password,

@@ -45,6 +45,14 @@ describe('=== PKI AND CA (RSA) ===', () => {
         test('Fail create client with ca passphrase', async () => {
             await expect(easyrsa.createClient({ name: 'client', caPassword: password })).rejects.toThrow(PkiDirNotFoundError);
         })
+        
+        test('Fail create code signning', async () => {
+            await expect(easyrsa.createCodeSigning({ name: 'codesigning' })).rejects.toThrow(CaNotFoundError);
+        })
+
+        test('Fail create client with ca passphrase', async () => {
+            await expect(easyrsa.createCodeSigning({ name: 'codesigning', caPassword: password })).rejects.toThrow(PkiDirNotFoundError);
+        })
 
         test('Fail renew certificate', async () => {
             await expect(easyrsa.renew({ name: 'client' })).rejects.toThrow(CaNotFoundError);
@@ -91,6 +99,10 @@ describe('=== PKI AND CA (RSA) ===', () => {
     
         test('Fail create client with CA passphrase', async () => {
             await expect(easyrsa.createClient({ name: 'client', caPassword: password })).rejects.toThrow(CaNotFoundError);
+        }, timeout)
+
+        test('Fail create code signing with CA passphrase', async () => {
+            await expect(easyrsa.createCodeSigning({ name: 'codesigning', caPassword: password })).rejects.toThrow(CaNotFoundError);
         }, timeout)
 
         test('Fail renew certificate', async () => {
@@ -270,6 +282,69 @@ describe('=== CLIENT ===', () => {
 
         test('Fail to create client without ca passphrase', async () => {
             await expect(easyrsa.createClient({ name })).rejects.toThrow(PrivateKeyIsEncryptedError);
+        }, timeout)
+    })
+})
+
+
+describe('=== CODE SIGNING ===', () => {
+    const easyrsa = new EasyRSA(easyrsaConf);
+
+    describe('Try create code signing with unprotected CA', () => {
+        beforeEach(async () => {
+            await easyrsa.initPki();
+            await easyrsa.buildCa();
+            name = 'codesigning';
+        })
+
+        test('Create code signing without passphrase', async () => {
+            await expect(easyrsa.createCodeSigning({ name })).resolves.toBeDefined();
+            expect(existsSync(join(process.cwd(), pki, 'issued', `${name}.crt`))).toBeTruthy();
+            expect(existsSync(join(process.cwd(), pki, 'private', `${name}.key`))).toBeTruthy();
+        }, timeout)
+
+        test('Create code signing with passphrase', async () => {
+            await expect(easyrsa.createCodeSigning({ name, password: certPassword })).resolves.toBeDefined();
+            expect(existsSync(join(process.cwd(), pki, 'issued', `${name}.crt`))).toBeTruthy();
+            expect(existsSync(join(process.cwd(), pki, 'private', `${name}.key`))).toBeTruthy();
+            const privateKey = readFileSync(join(process.cwd(), pki, 'private', `${name}.key`), 'utf8');
+            expect(privateKey.includes('ENCRYPTED')).toBeTruthy();
+        }, timeout)
+
+        test('Fail re-create code signing', async () => {
+            await expect(easyrsa.createCodeSigning({ name })).resolves.toBeDefined();
+            await expect(easyrsa.createCodeSigning({ name })).rejects.toThrow(CertificateAlreadyExistsError);
+        }, timeout)
+
+    })
+
+    describe('Try client code signing with protected CA', () => {
+        beforeEach(async () => {
+            await easyrsa.initPki();
+            await easyrsa.buildCa({ password });
+            name = 'client'; 
+        })
+
+        test('Create code signing without passphrase', async () => {
+            await expect(easyrsa.createCodeSigning({ name, caPassword: password })).resolves.toBeDefined();
+            expect(existsSync(join(process.cwd(), pki, 'issued', `${name}.crt`))).toBeTruthy();
+            expect(existsSync(join(process.cwd(), pki, 'private', `${name}.key`))).toBeTruthy();
+        }, timeout)
+
+        test('Create code signing with passphrase', async () => {
+            await expect(easyrsa.createCodeSigning({ name, caPassword: password, password: certPassword })).resolves.toBeDefined();
+            expect(existsSync(join(process.cwd(), pki, 'issued', `${name}.crt`))).toBeTruthy();
+            expect(existsSync(join(process.cwd(), pki, 'private', `${name}.key`))).toBeTruthy();
+            const privateKey = readFileSync(join(process.cwd(), pki, 'private', `${name}.key`), 'utf8');
+            expect(privateKey.includes('ENCRYPTED')).toBeTruthy();
+        }, timeout)
+
+        test('Fail to code signing client bad ca passphrase', async () => {
+            await expect(easyrsa.createCodeSigning({ name, caPassword: 'a'})).rejects.toThrow(BadCaPasswordError);
+        }, timeout)
+
+        test('Fail to code signing client without ca passphrase', async () => {
+            await expect(easyrsa.createCodeSigning({ name })).rejects.toThrow(PrivateKeyIsEncryptedError);
         }, timeout)
     })
 })
