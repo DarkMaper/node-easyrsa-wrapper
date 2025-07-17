@@ -101,6 +101,16 @@ await easyrsa.createClient({
 })
 ```
 
+Create a code signing
+```javascript
+await easyrsa.createCodeSigning({
+    name: 'filename',
+    commonName: 'My Code Signing',
+    password: 'CertPassword',
+    caPassword: 'CaPassword' 
+})
+```
+
 ### Revoke a Certificate
 
 ```javascript
